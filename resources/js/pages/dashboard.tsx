@@ -71,7 +71,7 @@ function DonutChart({
     let accumulatedCircumference = 0;
     const radius = 60;
     const strokeWidth = 14;
-    const circumference = 2 * Math.PI * radius; 
+    const circumference = 2 * Math.PI * radius;
 
     return (
         <div className="flex flex-col items-center justify-center gap-8 p-4 sm:flex-row">
@@ -171,7 +171,7 @@ function MaintenanceLineChart({
         return { x, y, label: d.label, val: d.value };
     });
 
-    
+
     let pathD = '';
     if (points.length > 0) {
         pathD = `M ${points[0].x} ${points[0].y}`;
@@ -480,7 +480,7 @@ export default function Dashboard({ statistics }: DashboardProps) {
             <Head title="Dashboard Inventaris" />
             <div className="mx-auto flex h-full w-full flex-1 flex-col gap-6 overflow-x-auto p-6 md:max-w-7xl md:p-8">
                 <PageHeader
-                    title="Dashboard Inventaris Aset"
+                    title="Dashboard Inventaris"
                     description="Sistem pengelolaan dan pemantauan aset perpustakaan."
                     actions={<div className="flex flex-wrap gap-2"></div>}
                 />
