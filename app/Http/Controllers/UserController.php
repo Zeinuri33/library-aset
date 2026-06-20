@@ -20,6 +20,7 @@ class UserController extends Controller
         $users = User::with('roles')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('username', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
                       ->orWhereHas('roles', function ($q) use ($search) {
                           $q->where('name', 'like', "%{$search}%");
@@ -48,6 +49,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|alpha_dash|unique:users,username',
             'email' => 'required|string|email|max:255|unique:users,email',
             'role' => 'required|string|in:Super Admin,Admin Inventaris,Staff,Teknisi,Pimpinan',
             'password' => 'required|string|min:8',
@@ -71,6 +73,7 @@ class UserController extends Controller
 
         $rules = [
             'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|alpha_dash|unique:users,username,' . $id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role' => 'required|string|in:Super Admin,Admin Inventaris,Staff,Teknisi,Pimpinan',
         ];

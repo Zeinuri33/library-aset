@@ -38,6 +38,7 @@ import { toast } from 'sonner';
 interface User {
     id: number;
     name: string;
+    username: string;
     email: string;
     role: string;
     email_verified_at: string | null;
@@ -93,6 +94,7 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
 
     const form = useForm({
         name: '',
+        username: '',
         email: '',
         role: 'Staff',
         password: '',
@@ -123,6 +125,7 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
         form.clearErrors();
         form.setData({
             name: item.name,
+            username: item.username,
             email: item.email,
             role: item.role || 'Staff',
             password: '',
@@ -271,7 +274,7 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
                             {item.name}
                         </span>
                         <span className="truncate text-[10px] text-muted-foreground">
-                            {item.email}
+                            @{item.username}
                         </span>
                     </div>
                 </div>
@@ -365,7 +368,7 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
                 <TableToolbar
                     searchValue={search}
                     onSearchChange={setSearch}
-                    searchPlaceholder="Cari nama, email, atau role..."
+                    searchPlaceholder="Cari nama, username, atau role..."
                     selectedCount={selectedRows.length}
                     onExportCSV={handleExportCSV}
                 />
@@ -426,7 +429,7 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
                                     : 'Tambah Pengguna Baru'}
                             </DialogTitle>
                             <DialogDescription className="text-xs">
-                                Masukkan nama, email, dan tetapkan
+                                Masukkan nama, username, dan tetapkan
                                 kewenangan/role akses di bawah ini.
                             </DialogDescription>
                         </DialogHeader>
@@ -453,6 +456,32 @@ export default function UserIndex({ users, filters, roles }: PageProps) {
                                 {form.errors.name && (
                                     <p className="animate-pulse text-[10px] font-bold text-destructive">
                                         {form.errors.name}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-1">
+                                <Label
+                                    htmlFor="username"
+                                    className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Username{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="username"
+                                    type="text"
+                                    value={form.data.username}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLInputElement>,
+                                    ) => form.setData('username', e.target.value)}
+                                    placeholder=""
+                                    className="h-9.5 rounded-xl border-border/50 bg-background text-xs shadow-2xs focus-visible:ring-1 focus-visible:ring-primary"
+                                    required
+                                />
+                                {form.errors.username && (
+                                    <p className="animate-pulse text-[10px] font-bold text-destructive">
+                                        {form.errors.username}
                                     </p>
                                 )}
                             </div>

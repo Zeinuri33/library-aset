@@ -103,26 +103,31 @@ class RolePermissionSeeder extends Seeder
         $testUsers = [
             [
                 'name' => 'Super Admin',
+                'username' => 'superadmin',
                 'email' => 'admin@gmail.com',
                 'role' => 'Super Admin'
             ],
             [
                 'name' => 'Admin Inventaris',
+                'username' => 'admin_inventaris',
                 'email' => 'admin_inventaris@gmail.com',
                 'role' => 'Admin Inventaris'
             ],
             [
                 'name' => 'Staff Inventaris',
+                'username' => 'staff',
                 'email' => 'staff@gmail.com',
                 'role' => 'Staff'
             ],
             [
                 'name' => 'Teknisi Inventaris',
+                'username' => 'teknisi',
                 'email' => 'teknisi@gmail.com',
                 'role' => 'Teknisi'
             ],
             [
                 'name' => 'Pimpinan Lembaga',
+                'username' => 'pimpinan',
                 'email' => 'pimpinan@gmail.com',
                 'role' => 'Pimpinan'
             ],
@@ -133,6 +138,7 @@ class RolePermissionSeeder extends Seeder
             if (! $user) {
                 $user = User::create([
                     'name' => $u['name'],
+                    'username' => $u['username'],
                     'email' => $u['email'],
                     'password' => Hash::make('password'),
                     'email_verified_at' => now(),

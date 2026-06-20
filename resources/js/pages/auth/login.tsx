@@ -111,7 +111,7 @@ export default function Login({ status, canResetPassword }: Props) {
                             Masuk Ke Akun
                         </h1>
                         <p className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-                            Masukkan email dan kata sandi Anda untuk mengakses
+                            Masukkan username dan kata sandi Anda untuk mengakses
                             dashboard pengelola.
                         </p>
                     </div>
@@ -132,25 +132,25 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <div className="grid gap-4">
                                     <div className="grid gap-1.5">
                                         <label
-                                            htmlFor="email"
+                                            htmlFor="username"
                                             className="cursor-pointer text-xs font-semibold tracking-wide text-neutral-700 uppercase dark:text-neutral-300"
                                         >
-                                            Alamat Email
+                                            Username
                                         </label>
                                         <input
-                                            id="email"
-                                            type="email"
-                                            name="email"
+                                            id="username"
+                                            type="text"
+                                            name="username"
                                             required
                                             autoFocus
                                             tabIndex={1}
-                                            autoComplete="email"
-                                            placeholder="Masukkan alamat email"
+                                            autoComplete="username"
+                                            placeholder="Masukkan username"
                                             className="flex h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 ring-offset-white transition-all placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-50 dark:ring-offset-neutral-950 dark:placeholder:text-neutral-500 dark:focus-visible:ring-neutral-800"
                                         />
-                                        {errors.email && (
+                                        {errors.username && (
                                             <p className="mt-0.5 text-xs font-medium text-red-500 dark:text-red-400">
-                                                {errors.email}
+                                                {errors.username}
                                             </p>
                                         )}
                                     </div>

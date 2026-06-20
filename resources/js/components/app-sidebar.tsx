@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { useEffect, useState } from 'react';
 import {
     LayoutGrid,
     Package,
@@ -120,7 +121,15 @@ export function AppSidebar() {
         auth: { user: { role?: string } | null };
     };
     const userRole = auth?.user?.role ?? 'Staff';
-    const { isCurrentUrl } = useCurrentUrl();
+    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
+
+    const isOnUsersPage = isCurrentOrParentUrl('/users');
+    const isOnRolesPage = isCurrentUrl('/roles');
+    const [isUsersOpen, setIsUsersOpen] = useState(isOnUsersPage || isOnRolesPage);
+
+    useEffect(() => {
+        setIsUsersOpen(isOnUsersPage || isOnRolesPage);
+    }, [isOnUsersPage, isOnRolesPage]);
 
     return (
         <Sidebar
@@ -172,7 +181,8 @@ export function AppSidebar() {
                         </SidebarGroupLabel>
                         <SidebarMenu>
                         <Collapsible
-                            defaultOpen={false}
+                            open={isUsersOpen}
+                            onOpenChange={setIsUsersOpen}
                             className="group/collapsible"
                         >
                             <SidebarMenuItem>
