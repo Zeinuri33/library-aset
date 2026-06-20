@@ -19,6 +19,10 @@ createInertiaApp({
                 return null;
             case name === 'inventory/print':
                 return null;
+            case name === 'public/asset':
+                return null;
+            case name === 'scan':
+                return null;
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):

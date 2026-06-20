@@ -44,15 +44,17 @@ export default function DeleteUser() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>
-                            Are you sure you want to delete your account?
-                        </DialogTitle>
-                        <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
-                        </DialogDescription>
+                        <div className="space-y-2 text-center">
+                            <DialogTitle>
+                                Are you sure you want to delete your account?
+                            </DialogTitle>
+                            <DialogDescription>
+                                Once your account is deleted, all of its resources
+                                and data will also be permanently deleted. Please
+                                enter your password to confirm you would like to
+                                permanently delete your account.
+                            </DialogDescription>
+                        </div>
 
                         <Form
                             {...ProfileController.destroy.form()}
@@ -84,7 +86,7 @@ export default function DeleteUser() {
                                         <InputError message={errors.password} />
                                     </div>
 
-                                    <DialogFooter className="gap-2">
+                                    <DialogFooter className="gap-3 sm:justify-center">
                                         <DialogClose asChild>
                                             <Button
                                                 variant="secondary"

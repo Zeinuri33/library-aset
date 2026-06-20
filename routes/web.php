@@ -38,6 +38,15 @@ Route::get("read-composer-json", function () {
     return response()->file("/var/www/html/composer.json");
 });
 
+
+Route::get('asset/{kode}', [\App\Http\Controllers\PublicAssetController::class, 'show'])
+    ->where('kode', '.*')
+    ->name('public.asset.show');
+
+Route::get("scan", function () {
+    return \Inertia\Inertia::render("scan");
+})->name("scan");
+
 Route::middleware(["auth", "verified"])->group(function () {
     Route::get("dashboard", [\App\Http\Controllers\DashboardController::class, "index"])->name("dashboard");
     Route::resource("users", \App\Http\Controllers\UserController::class)->except(["create", "show", "edit"]);
@@ -49,9 +58,6 @@ Route::middleware(["auth", "verified"])->group(function () {
 
     Route::get("unit-barang/lookup", [\App\Http\Controllers\UnitBarangController::class, "lookup"])->name("unit-barang.lookup");
     Route::resource("unit-barang", \App\Http\Controllers\UnitBarangController::class)->except(["create", "edit"]);
-    Route::get("scan", function () {
-        return \Inertia\Inertia::render("scan");
-    })->name("scan");
     Route::resource("sumber-dana", \App\Http\Controllers\SumberDanaController::class)->except(["create", "show", "edit"]);
     Route::resource("pemeliharaan", \App\Http\Controllers\PemeliharaanController::class)->except(["create", "show", "edit"]);
     Route::get("inventory/labels", [\App\Http\Controllers\UnitBarangController::class, "labels"])->name("inventory.labels");

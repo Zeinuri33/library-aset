@@ -102,8 +102,10 @@ export default function UnitBarangShow({ unit }: ShowProps) {
         toast.success('Membuka halaman cetak label');
     };
 
+    const qrAssetUrl = window.location.origin + '/asset/' + unit.kode_inventaris;
+
     const handleDownloadQR = () => {
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(unit.kode_inventaris)}&size=300x300`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrAssetUrl)}&size=300x300`;
         const link = document.createElement('a');
         link.href = qrUrl;
         link.target = '_blank';
@@ -201,7 +203,7 @@ export default function UnitBarangShow({ unit }: ShowProps) {
                             <h3 className="text-xs uppercase font-extrabold text-muted-foreground tracking-wider">Vector QR Label</h3>
                             <div className="bg-white p-3 rounded-md shadow-sm border border-slate-100/60 inline-flex items-center justify-center">
                                 <img 
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(unit.kode_inventaris)}&size=150x150`} 
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrAssetUrl)}&size=150x150`} 
                                     alt={unit.kode_inventaris} 
                                     className="h-32 w-32 object-contain"
                                 />

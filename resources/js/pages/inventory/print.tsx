@@ -201,7 +201,8 @@ function ToggleRow({ label, checked, onChange, id }: { label: string; checked: b
 
 // ─── Label Component ─────────────────────────────────────────────────────────
 function InventoryLabel({ unit, settings }: { unit: UnitBarang; settings: LabelSettings }) {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(unit.kode_inventaris)}&size=200x200`;
+    const qrAssetUrl = (typeof window !== 'undefined' ? window.location.origin : '') + '/asset/' + unit.kode_inventaris;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrAssetUrl)}&size=200x200`;
     const borderStyle = settings.showBorder ? '1.2px solid #000000' : 'none';
 
     let flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse' = 'row';

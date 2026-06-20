@@ -451,11 +451,4 @@ export default function QRScannerPage() {
     );
 }
 
-QRScannerPage.layout = {
-    breadcrumbs: [
-        {
-            title: 'Scan QR Aset',
-            href: '/scan',
-        },
-    ],
-};
+QRScannerPage.layout = null;

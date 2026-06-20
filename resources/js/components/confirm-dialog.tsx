@@ -34,12 +34,14 @@ export function ConfirmDialog({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>
-                        {description}
-                    </DialogDescription>
+                    <div className="space-y-2 text-center">
+                        <DialogTitle>{title}</DialogTitle>
+                        <DialogDescription>
+                            {description}
+                        </DialogDescription>
+                    </div>
                 </DialogHeader>
-                <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                <DialogFooter className="gap-3 sm:justify-center">
                     <Button variant="outline" onClick={onClose}>
                         {cancelText}
                     </Button>

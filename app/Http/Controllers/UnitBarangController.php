@@ -77,7 +77,7 @@ class UnitBarangController extends Controller
         $validated['kode_inventaris'] = $codeData['kode_inventaris'];
 
         
-        $validated['qr_code'] = $codeData['kode_inventaris'];
+        $validated['qr_code'] = url('/asset/' . $codeData['kode_inventaris']);
 
         UnitBarang::create($validated);
 
@@ -130,7 +130,7 @@ class UnitBarangController extends Controller
         );
 
         $validated['kode_inventaris'] = $codeData['kode_inventaris'];
-        $validated['qr_code'] = $codeData['kode_inventaris'];
+        $validated['qr_code'] = url('/asset/' . $codeData['kode_inventaris']);
 
         $unitBarang->update($validated);
 
@@ -177,6 +177,11 @@ class UnitBarangController extends Controller
                 if (preg_match('/\/unit-barang\/(\d+)/', $path, $matches)) {
                     $id = $matches[1];
                     $unitBarang = UnitBarang::find($id);
+                }
+                
+                if (preg_match('#/asset/(.+)#', $path, $matches)) {
+                    $kode = $matches[1];
+                    $unitBarang = UnitBarang::where('kode_inventaris', $kode)->first();
                 }
             }
         }

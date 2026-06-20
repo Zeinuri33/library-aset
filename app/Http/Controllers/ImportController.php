@@ -240,7 +240,7 @@ class ImportController extends Controller
                     'kode_inventaris'   => $kodeInventaris,
                     'kondisi'           => $kondisi,
                     'status'            => 'tersedia',
-                    'qr_code'           => $kodeInventaris,  
+                    'qr_code'           => url('/asset/' . $kodeInventaris),
                     'harga'             => $mapped['harga'],
                 ];
 

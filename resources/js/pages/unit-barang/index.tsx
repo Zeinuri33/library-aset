@@ -965,7 +965,7 @@ export default function UnitBarangIndex({
                                         <>
                                             <div className="rounded-md border border-border bg-white p-2">
                                                 <img
-                                                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(getFormQrPreview())}&size=100x100`}
+                                                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(window.location.origin + '/asset/' + getFormQrPreview())}&size=100x100`}
                                                     alt="Preview"
                                                     className="h-20 w-20 object-contain"
                                                 />
@@ -1019,7 +1019,7 @@ export default function UnitBarangIndex({
                             <div className="flex flex-col items-center justify-center space-y-5 p-4">
                                 <div className="flex items-center justify-center rounded-md border border-border bg-white p-4">
                                     <img
-                                        src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(selectedUnit.kode_inventaris)}&size=200x200`}
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(window.location.origin + '/asset/' + selectedUnit.kode_inventaris)}&size=200x200`}
                                         alt={selectedUnit.kode_inventaris}
                                         className="h-40 w-40 object-contain"
                                     />
@@ -1052,7 +1052,8 @@ export default function UnitBarangIndex({
                                         variant="outline"
                                         className="h-9 flex-1 gap-1.5 rounded-md border-border text-xs font-semibold text-foreground"
                                         onClick={() => {
-                                            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(selectedUnit.kode_inventaris)}&size=300x300`;
+                                            const qrAssetUrl = window.location.origin + '/asset/' + selectedUnit.kode_inventaris;
+                                            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrAssetUrl)}&size=300x300`;
                                             const link =
                                                 document.createElement('a');
                                             link.href = qrUrl;
