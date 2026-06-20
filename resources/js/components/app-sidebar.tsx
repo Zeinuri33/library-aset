@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 import {
     LayoutGrid,
     Package,
@@ -10,6 +11,8 @@ import {
     Tag,
     Upload,
     Users,
+    Shield,
+    ChevronDown,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
@@ -23,9 +26,17 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubItem,
+    SidebarMenuSubButton,
     SidebarGroup,
     SidebarGroupLabel,
 } from '@/components/ui/sidebar';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
@@ -93,24 +104,12 @@ const menuGroups = [
                 icon: Tag,
                 roles: ['Super Admin', 'Admin Inventaris', 'Staff', 'Pimpinan'],
             },
-            {
-                title: 'Import Data',
-                href: '/inventory/import',
-                icon: Upload,
-                roles: ['Super Admin', 'Admin Inventaris'],
-            },
+
         ] as RoleNavItem[],
     },
     {
         label: 'Sistem',
-        items: [
-            {
-                title: 'Manajemen User',
-                href: '/users',
-                icon: Users,
-                roles: ['Super Admin', 'Admin Inventaris', 'Admin'],
-            },
-        ] as RoleNavItem[],
+        items: [] as RoleNavItem[],
     },
 ];
 
@@ -121,6 +120,7 @@ export function AppSidebar() {
         auth: { user: { role?: string } | null };
     };
     const userRole = auth?.user?.role ?? 'Staff';
+    const { isCurrentUrl } = useCurrentUrl();
 
     return (
         <Sidebar
@@ -162,6 +162,70 @@ export function AppSidebar() {
                         </SidebarGroup>
                     );
                 })}
+
+                {}
+                {(userRole === 'Super Admin' ||
+                    userRole === 'Admin Inventaris') && (
+                    <SidebarGroup className="mb-2 p-0">
+                        <SidebarGroupLabel className="px-3 text-[10px] font-bold tracking-wider text-muted-foreground/60 uppercase">
+                            Sistem
+                        </SidebarGroupLabel>
+                        <SidebarMenu>
+                        <Collapsible
+                            defaultOpen={false}
+                            className="group/collapsible"
+                        >
+                            <SidebarMenuItem>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuButton
+                                        tooltip={{ children: 'Users' }}
+                                        className="w-full"
+                                    >
+                                        <Users className="h-4 w-4 shrink-0" />
+                                        <span className="flex-1 text-left">
+                                            Users
+                                        </span>
+                                        <ChevronDown className="ml-auto h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-0 -rotate-90" />
+                                    </SidebarMenuButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                isActive={isCurrentUrl('/users')}
+                                            >
+                                                <Link href="/users" prefetch>
+                                                    <Users className="h-4 w-4" />
+                                                    <span>
+                                                        Manajemen User
+                                                    </span>
+                                                </Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+
+                                        {userRole === 'Super Admin' && (
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton
+                                                    asChild
+                                                    isActive={isCurrentUrl('/roles')}
+                                                >
+                                                    <Link href="/roles" prefetch>
+                                                        <Shield className="h-4 w-4" />
+                                                        <span>
+                                                            Role & Izin
+                                                        </span>
+                                                    </Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        )}
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </SidebarMenuItem>
+                        </Collapsible>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
 
             {}

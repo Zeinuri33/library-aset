@@ -17,6 +17,25 @@ class User extends Authenticatable
 
     
 
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    
+
+    protected function getRoleAttribute(): string
+    {
+        return $this->getRoleName();
+    }
+
+    
+
+    protected $appends = ['role'];
+
+    
+
     protected function casts(): array
     {
         return [

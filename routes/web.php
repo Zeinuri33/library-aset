@@ -41,6 +41,8 @@ Route::get("read-composer-json", function () {
 Route::middleware(["auth", "verified"])->group(function () {
     Route::get("dashboard", [\App\Http\Controllers\DashboardController::class, "index"])->name("dashboard");
     Route::resource("users", \App\Http\Controllers\UserController::class)->except(["create", "show", "edit"]);
+    Route::get("roles", [\App\Http\Controllers\RoleController::class, "index"])->name("roles.index");
+    Route::put("roles/{role}", [\App\Http\Controllers\RoleController::class, "update"])->name("roles.update");
     Route::resource("kategori", \App\Http\Controllers\KategoriController::class)->except(["create", "show", "edit"]);
     Route::resource("ruang", \App\Http\Controllers\RuangController::class)->except(["create", "show", "edit"]);
     Route::resource("barang", \App\Http\Controllers\BarangController::class)->except(["create", "show", "edit"]);
