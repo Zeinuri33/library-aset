@@ -27,7 +27,6 @@ interface Kategori {
 interface Barang {
     id: number;
     nama_barang: string;
-    thumbnail: string | null;
     deskripsi: string | null;
     kategori?: Kategori;
 }
@@ -60,6 +59,7 @@ interface UnitBarang {
     kondisi: 'baik' | 'rusak_ringan' | 'rusak_berat';
     status: 'tersedia' | 'dipinjam' | 'diperbaiki' | 'dihapus';
     qr_code: string | null;
+    foto: string | null;
     harga: number | null;
     barang: Barang;
     ruang: Ruang | null;
@@ -149,9 +149,9 @@ export default function UnitBarangShow({ unit }: ShowProps) {
                     <div className="flex flex-col gap-6">
                         <Card className="rounded-md border border-border bg-card shadow-xs overflow-hidden">
                             <div className="relative aspect-square w-full bg-muted/40 dark:bg-muted/10 border-b border-border/25 flex items-center justify-center overflow-hidden">
-                                {unit.barang.thumbnail ? (
+                                {unit.foto ? (
                                     <img 
-                                        src={unit.barang.thumbnail} 
+                                        src={unit.foto} 
                                         alt={unit.barang.nama_barang} 
                                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                                     />

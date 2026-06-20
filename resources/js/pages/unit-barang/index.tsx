@@ -1,5 +1,5 @@
 import { Head, useForm, router, Link } from '@inertiajs/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { DataTable } from '@/components/data-table';
 import { ConfirmDialog } from '@/components/confirm-dialog';
@@ -25,8 +25,10 @@ import {
     Printer,
     Download,
     Eye,
+    Image as ImageIcon,
     Loader2,
     Upload,
+    Camera,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -64,6 +66,7 @@ interface UnitBarang {
     kondisi: 'baik' | 'rusak_ringan' | 'rusak_berat';
     status: 'tersedia' | 'dipinjam' | 'diperbaiki' | 'dihapus';
     qr_code: string | null;
+    foto: string | null;
     harga: number | null;
     created_at: string;
     barang?: Barang;
@@ -143,15 +146,18 @@ export default function UnitBarangIndex({
     const [filterKondisi, setFilterKondisi] = useState<string>('');
     const [filterRuang, setFilterRuang] = useState<string>('');
     const [filterStatus, setFilterStatus] = useState<string>('');
+    const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const form = useForm({
         barang_id: '',
         ruang_id: '',
         sumber_dana_id: '',
         tanggal_perolehan: '',
-        kondisi: 'baik',
-        status: 'tersedia',
+        kondisi: 'baik' as 'baik' | 'rusak_ringan' | 'rusak_berat',
+        status: 'tersedia' as 'tersedia' | 'dipinjam' | 'diperbaiki' | 'dihapus',
         harga: '',
+        foto: null as File | null,
     });
 
     const performSearch = useDebounce((query: string) => {
@@ -168,10 +174,28 @@ export default function UnitBarangIndex({
         }
     }, [search]);
 
+    useEffect(() => {
+        return () => {
+            if (fotoPreview && fotoPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(fotoPreview);
+            }
+        };
+    }, [fotoPreview]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            form.setData('foto', file);
+            const objectUrl = URL.createObjectURL(file);
+            setFotoPreview(objectUrl);
+        }
+    };
+
     const openCreateForm = () => {
         form.reset();
         form.clearErrors();
         setSelectedId(null);
+        setFotoPreview(null);
         setIsFormOpen(true);
     };
 
@@ -187,8 +211,10 @@ export default function UnitBarangIndex({
             kondisi: item.kondisi,
             status: item.status,
             harga: item.harga?.toString() || '',
+            foto: null,
         });
         setSelectedId(item.id);
+        setFotoPreview(item.foto);
         setIsFormOpen(true);
     };
 
@@ -385,13 +411,28 @@ export default function UnitBarangIndex({
         {
             header: 'Aset / Barang',
             cell: (item: UnitBarang) => (
-                <div className="flex flex-col">
-                    <span className="font-bold text-foreground/90">
-                        {item.barang?.nama_barang || '-'}
-                    </span>
-                    <span className="text-[10px] font-semibold text-muted-foreground">
-                        Unit urut ke-{item.nomor_unit}
-                    </span>
+                <div className="flex items-center gap-3">
+                    <div className="group relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-muted/40 shadow-xs">
+                        {item.foto ? (
+                            <img
+                                src={item.foto}
+                                alt={item.barang?.nama_barang || 'Foto'}
+                                className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                            />
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center text-muted-foreground/50">
+                                <ImageIcon className="h-4 w-4" />
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-bold text-foreground/90">
+                            {item.barang?.nama_barang || '-'}
+                        </span>
+                        <span className="text-[10px] font-semibold text-muted-foreground">
+                            Unit urut ke-{item.nomor_unit}
+                        </span>
+                    </div>
                 </div>
             ),
         },
@@ -616,7 +657,7 @@ export default function UnitBarangIndex({
                 </div>
 
                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogContent className="max-w-2xl rounded-md border border-border bg-background shadow-lg">
+                    <DialogContent className="max-w-3xl sm:max-w-3xl rounded-xl border border-border bg-background shadow-xl">
                         <DialogHeader className="border-b border-border pb-3">
                             <DialogTitle className="text-sm font-black tracking-wider text-foreground uppercase">
                                 {selectedId
@@ -627,12 +668,11 @@ export default function UnitBarangIndex({
                                 Daftar unit inventaris fisik baru. Kode inventaris dan kode QR di-generate otomatis.
                             </DialogDescription>
                         </DialogHeader>
-
                         <form
                             onSubmit={onSubmit}
-                            className="mt-2 grid grid-cols-1 gap-5 md:grid-cols-2"
+                            className="mt-2 grid grid-cols-1 gap-6 md:grid-cols-2"
                         >
-                            <div className="space-y-3.5">
+                            <div className="space-y-4">
                                 <div className="space-y-1">
                                     <Label
                                         htmlFor="barang_id"
@@ -800,11 +840,6 @@ export default function UnitBarangIndex({
                                             ))}
                                         </select>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col justify-between space-y-3.5">
-                                <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
                                         <Label
                                             htmlFor="kondisi"
@@ -843,7 +878,7 @@ export default function UnitBarangIndex({
                                             htmlFor="status"
                                             className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase"
                                         >
-                                            Status Pemakaian{' '}
+                                            Status{' '}
                                             <span className="text-destructive">
                                                 *
                                             </span>
@@ -877,10 +912,51 @@ export default function UnitBarangIndex({
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="flex flex-col justify-between space-y-4">
+                                <div className="space-y-1.5">
+                                    <Label className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                                        Foto Aset
+                                    </Label>
+                                    <div
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="relative flex h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-border bg-muted/20 transition-all duration-200 hover:bg-muted/40 hover:border-muted-foreground/30"
+                                    >
+                                        {fotoPreview ? (
+                                            <img
+                                                src={fotoPreview}
+                                                alt="Preview Foto"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                                                <Camera className="h-6 w-6" />
+                                                <span className="text-[9px] font-bold">
+                                                    Unggah Foto
+                                                </span>
+                                                <span className="text-[8px] text-muted-foreground/60">
+                                                    Kosongkan jika tidak ada
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    {form.errors.foto && (
+                                        <p className="animate-pulse text-[10px] font-bold text-destructive">
+                                            {form.errors.foto}
+                                        </p>
+                                    )}
+                                </div>
 
-                                <div className="flex flex-col items-center justify-center gap-2 rounded-md border border-border bg-muted/30 p-4 text-center">
-                                    <h4 className="text-[9px] font-black tracking-widest text-muted-foreground uppercase">
-                                        Pratinjau QR Code Otomatis
+                                <div className="flex min-h-[165px] flex-col items-center justify-center gap-3 rounded-lg border border-border bg-muted/30 p-5 text-center">
+                                    <h4 className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">
+                                        Pratinjau QR Code
                                     </h4>
 
                                     {form.data.barang_id &&
@@ -894,22 +970,22 @@ export default function UnitBarangIndex({
                                                     className="h-20 w-20 object-contain"
                                                 />
                                             </div>
-                                            <span className="rounded-md border border-border bg-background px-2.5 py-0.5 font-mono text-[9.5px] font-bold text-foreground">
+                                                <span className="rounded-md border border-border bg-background px-3 py-1 font-mono text-[10px] font-bold text-foreground">
                                                 {getFormQrPreview()}
                                             </span>
                                         </>
                                     ) : (
-                                        <div className="px-4 py-8 text-[10px] leading-normal text-muted-foreground">
+                                        <div className="px-4 text-[10px] leading-normal text-muted-foreground">
                                             Masukkan parameter barang, tanggal, dan sumber dana untuk melihat kode QR real-time.
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="flex justify-end gap-2 border-t border-border pt-3 md:pt-0">
+                                <div className="flex justify-end gap-3 border-border pt-4 md:pt-0">
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-9 rounded-md text-xs font-bold text-foreground"
+                                        className="h-10 rounded-lg px-5 text-xs font-bold text-foreground"
                                         onClick={() => setIsFormOpen(false)}
                                     >
                                         Batal
@@ -917,10 +993,10 @@ export default function UnitBarangIndex({
                                     <Button
                                         type="submit"
                                         disabled={form.processing}
-                                        className="h-9 rounded-md bg-primary text-xs font-black tracking-wider text-primary-foreground uppercase hover:bg-primary/90"
+                                        className="h-10 rounded-lg bg-primary px-5 text-xs font-black tracking-wider text-primary-foreground uppercase hover:bg-primary/90"
                                     >
                                         {form.processing && (
-                                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                            <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                                         )}
                                         {selectedId
                                             ? 'Simpan Perubahan'

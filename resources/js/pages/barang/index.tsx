@@ -1,5 +1,5 @@
 import { Head, useForm, router } from '@inertiajs/react';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { DataTable } from '@/components/data-table';
 import { ConfirmDialog } from '@/components/confirm-dialog';
@@ -20,8 +20,6 @@ import {
     Plus,
     Edit,
     Trash2,
-    Image as ImageIcon,
-    Upload,
     Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,7 +33,6 @@ interface Barang {
     id: number;
     nama_barang: string;
     kategori_id: number;
-    thumbnail: string | null;
     deskripsi: string | null;
     created_at: string;
     kategori?: Kategori;
@@ -86,17 +83,13 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [categoryFilter, setCategoryFilter] = useState<string>('');
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const form = useForm({
         nama_barang: '',
         kategori_id: '',
         deskripsi: '',
-        thumbnail: null as File | null,
     });
 
     const performSearch = useDebounce((query: string) => {
@@ -113,30 +106,10 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
         }
     }, [search]);
 
-    useEffect(() => {
-        return () => {
-            if (previewUrl && previewUrl.startsWith('blob:')) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    }, [previewUrl]);
-
-    
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            form.setData('thumbnail', file);
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewUrl(objectUrl);
-        }
-    };
-
     const openCreateForm = () => {
         form.reset();
         form.clearErrors();
         setSelectedId(null);
-        setPreviewUrl(null);
         setIsFormOpen(true);
     };
 
@@ -160,14 +133,12 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
         }
 
         setSelectedId(item.id);
-        setPreviewUrl(item.thumbnail);
         setIsFormOpen(true);
 
         form.setData({
             nama_barang: item.nama_barang || '',
             kategori_id: detectedKategoriId,
             deskripsi: item.deskripsi || '',
-            thumbnail: null,
         });
     };
 
@@ -180,17 +151,14 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
         e.preventDefault();
 
         if (selectedId) {
-            router.post(
+            router.put(
                 `/barang/${selectedId}`,
                 {
-                    _method: 'PUT',
                     nama_barang: form.data.nama_barang,
                     kategori_id: form.data.kategori_id,
                     deskripsi: form.data.deskripsi,
-                    thumbnail: form.data.thumbnail,
                 },
                 {
-                    forceFormData: true,
                     onSuccess: () => {
                         setIsFormOpen(false);
                         form.reset();
@@ -321,25 +289,7 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
             ),
             className: 'w-[50px] pl-4',
         },
-        {
-            header: 'Thumbnail',
-            cell: (item: Barang) => (
-                <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-muted/40 shadow-2xs transition-transform duration-200 group-hover:scale-105 dark:border-neutral-800">
-                    {item.thumbnail ? (
-                        <img
-                            src={item.thumbnail}
-                            alt={item.nama_barang}
-                            className="h-full w-full object-cover"
-                        />
-                    ) : (
-                        <div className="flex h-full w-full items-center justify-center text-muted-foreground/60">
-                            <ImageIcon className="h-4 w-4" />
-                        </div>
-                    )}
-                </div>
-            ),
-            className: 'w-[90px]',
-        },
+
         {
             header: 'Kode Induk',
             cell: (item: Barang) => (
@@ -404,7 +354,7 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
             <div className="mx-auto flex h-full w-full flex-1 flex-col gap-6 p-6 md:max-w-7xl">
                 <PageHeader
                     title="Master Data Barang"
-                    description="Kelola referensi model master barang inventaris utama beserta gambar thumbnail."
+                    description="Kelola referensi model master barang inventaris utama."
                     actions={
                         <Button
                             className="hover:bg-neutral-850 gap-2 rounded-xl bg-neutral-900 font-semibold text-white shadow-xs transition-all duration-200 hover:shadow-md dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
@@ -496,46 +446,7 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
                         </DialogHeader>
 
                         <form onSubmit={onSubmit} className="mt-2 space-y-4">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <Label className="self-start text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
-                                    Foto Thumbnail
-                                </Label>
-                                <div
-                                    onClick={() =>
-                                        fileInputRef.current?.click()
-                                    }
-                                    className="relative flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 transition-all duration-200 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/50 dark:hover:bg-neutral-900"
-                                >
-                                    {previewUrl ? (
-                                        <img
-                                            src={previewUrl}
-                                            alt="Preview"
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex flex-col items-center text-neutral-500 hover:text-neutral-900">
-                                            <Upload className="mb-1.5 h-5 w-5" />
-                                            <span className="text-[9px] font-bold">
-                                                Pilih Gambar
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    className="hidden"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                                {form.errors.thumbnail && (
-                                    <p className="text-[10px] font-bold text-destructive">
-                                        {form.errors.thumbnail}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-1">
+<div className="space-y-1">
                                 <Label
                                     htmlFor="nama_barang"
                                     className="text-[10px] font-bold tracking-wider text-neutral-500 uppercase"
@@ -661,7 +572,7 @@ export default function BarangIndex({ barang, kategori, filters }: PageProps) {
                     onClose={() => setIsDeleteOpen(false)}
                     onConfirm={onDelete}
                     title="Hapus Referensi Barang?"
-                    description="Apakah Anda yakin ingin menghapus data master barang ini beserta seluruh fotonya? Tindakan ini permanen."
+                    description="Apakah Anda yakin ingin menghapus data master barang ini? Tindakan ini permanen."
                     variant="destructive"
                     confirmText="Hapus"
                 />

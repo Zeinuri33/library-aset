@@ -6,8 +6,6 @@ use App\Models\Barang;
 use App\Models\KategoriBarang;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class BarangController extends Controller
 {
@@ -46,13 +44,7 @@ class BarangController extends Controller
             'nama_barang' => 'required|string|max:255',
             'kategori_barang_id' => 'required|exists:kategori_barangs,id',
             'deskripsi' => 'nullable|string',
-            'thumbnail' => 'nullable|image|max:2048', 
         ]);
-
-        if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('thumbnails', 'public');
-            $validated['thumbnail'] = '/storage/' . $path;
-        }
 
         Barang::create($validated);
 
@@ -71,18 +63,7 @@ class BarangController extends Controller
             'nama_barang' => 'required|string|max:255',
             'kategori_barang_id' => 'required|exists:kategori_barangs,id',
             'deskripsi' => 'nullable|string',
-            'thumbnail' => 'nullable|image|max:2048',
         ]);
-
-        if ($request->hasFile('thumbnail')) {
-            
-            if ($barang->thumbnail) {
-                $oldPath = str_replace('/storage/', '', $barang->thumbnail);
-                Storage::disk('public')->delete($oldPath);
-            }
-            $path = $request->file('thumbnail')->store('thumbnails', 'public');
-            $validated['thumbnail'] = '/storage/' . $path;
-        }
 
         $barang->update($validated);
 
@@ -92,12 +73,6 @@ class BarangController extends Controller
     public function destroy($id)
     {
         $barang = Barang::findOrFail($id);
-        
-        if ($barang->thumbnail) {
-            $oldPath = str_replace('/storage/', '', $barang->thumbnail);
-            Storage::disk('public')->delete($oldPath);
-        }
-        
         $barang->delete();
 
         return redirect()->back()->with('success', 'Barang berhasil dihapus.');

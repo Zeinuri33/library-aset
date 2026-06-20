@@ -18,7 +18,8 @@ class UnitBarang extends Model
         'kondisi',
         'status',
         'qr_code',
-        'harga'
+        'harga',
+        'foto',
     ];
 
     protected $casts = [

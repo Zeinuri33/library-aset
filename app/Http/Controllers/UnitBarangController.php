@@ -9,6 +9,7 @@ use App\Models\SumberDana;
 use App\Models\KategoriBarang;
 use App\Services\InventoryCodeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class UnitBarangController extends Controller
@@ -56,7 +57,14 @@ class UnitBarangController extends Controller
             'status' => 'required|in:tersedia,dipinjam,diperbaiki,dihapus',
             'harga' => 'nullable|numeric|min:0',
             'qr_code' => 'nullable|string',
+            'foto' => 'nullable|image|max:2048',
         ]);
+
+        
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('foto-unit', 'public');
+            $validated['foto'] = '/storage/' . $path;
+        }
 
         
         $codeData = $codeService->generate(
@@ -89,7 +97,18 @@ class UnitBarangController extends Controller
             'status' => 'required|in:tersedia,dipinjam,diperbaiki,dihapus',
             'harga' => 'nullable|numeric|min:0',
             'qr_code' => 'nullable|string',
+            'foto' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('foto')) {
+            
+            if ($unitBarang->foto) {
+                $oldPath = str_replace('/storage/', '', $unitBarang->foto);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('foto')->store('foto-unit', 'public');
+            $validated['foto'] = '/storage/' . $path;
+        }
 
         $originalBarangId = $unitBarang->barang_id;
         $newBarangId = $validated['barang_id'];
